@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -22,7 +23,13 @@ func init() {
 }
 
 func Highlight(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello."))
+	chText := "<h1>"
+	for scanner.Scan() {
+		chText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", scanner.Text()[:1], scanner.Text()[1:])
+	}
+	chText += "</h1>"
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(chText))
 }
 
 func main() {
