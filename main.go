@@ -34,7 +34,7 @@ func countLetters(str string) int {
 }
 
 func Highlight(w http.ResponseWriter, r *http.Request) {
-	chText := "<h1>"
+	chText := "<div style='width: 600px; margin: auto; padding-top: 20px'><h2>"
 	for scanner.Scan() {
 		length := countLetters(scanner.Text())
 		switch {
@@ -48,7 +48,7 @@ func Highlight(w http.ResponseWriter, r *http.Request) {
 			chText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", scanner.Text()[:4], scanner.Text()[4:])
 		}
 	}
-	chText += "</h1>"
+	chText += "</h2></div>"
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(chText))
 }
