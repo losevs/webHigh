@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"unicode"
 )
 
@@ -48,12 +49,35 @@ func Highlight(w http.ResponseWriter, r *http.Request) {
 			chText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", scanner.Text()[:4], scanner.Text()[4:])
 		}
 	}
-	chText += "</h2></div>"
+	chText += "</h2></div><br><div style='width: 600px; margin: auto; padding-top: 20px; text-align: center'><form action='/hand'><label for='text'>Text</label><br><textarea style='height: 190px; width: 558px;' id='text' name='text' value=''></textarea><br><input type='submit' value='Submit'></form></div>"
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(chText))
 }
 
+func Handler(w http.ResponseWriter, r *http.Request) {
+	text := r.URL.Query().Get("text")
+	textSlice := strings.Split(text, " ")
+	NewText := "<div style='width: 600px; margin: auto; padding-top: 20px'><h2>"
+	for _, word := range textSlice {
+		length := len(word)
+		switch {
+		case length < 4:
+			NewText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", word[:1], word[1:])
+		case length == 4:
+			NewText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", word[:2], word[2:])
+		case length <= 6:
+			NewText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", word[:3], word[3:])
+		default:
+			NewText += fmt.Sprintf("<span style='color: black'>%s</span><span style='color: gray'>%s</span> ", word[:4], word[4:])
+		}
+	}
+	NewText += "</h2></div><br><div style='width: 600px; margin: auto; padding-top: 20px; text-align: center'><form action='/hand'><label for='text'>Text</label><br><textarea style='height: 190px; width: 558px;' id='text' name='text' value=''></textarea><br><input type='submit' value='Submit'></form></div>"
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(NewText))
+}
+
 func main() {
 	http.HandleFunc("/", Highlight)
+	http.HandleFunc("/hand", Handler)
 	log.Fatalln(http.ListenAndServe(":80", nil))
 }
